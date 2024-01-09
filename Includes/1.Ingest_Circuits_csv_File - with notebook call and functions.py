@@ -4,22 +4,17 @@
 # MAGIC
 
 # COMMAND ----------
-
+# calling configuration notebook
 # MAGIC %run "../Includes/Configuration"
 
 # COMMAND ----------
-
+#calling common_functions notebook
 # MAGIC %run "../Includes/Common_Functions"
 
 # COMMAND ----------
-
+# Replace the raw conatiner url using the raw_folder_path variable with fstring method
 circuits_df = spark.read.option("header", True).option("inferSchema", True).csv(f"{raw_folder_path}/circuits.csv")
 
-# COMMAND ----------
-
-display(circuits_df.describe())
-
-# COMMAND ----------
 
 # MAGIC %md
 # MAGIC Create own schema for ingestion
@@ -47,26 +42,20 @@ Circuits_Schema = StructType(fields= [
 
 circuits_df1 = spark.read.schema(Circuits_Schema).option("Header", True).csv(f"{raw_folder_path}/circuits.csv")
 
-# COMMAND ----------
-
-display(circuits_df1)
-
-# COMMAND ----------
-
 # MAGIC %md
 # MAGIC Select only required columns
 
 # COMMAND ----------
 
-circuits_selected_df = circuits_df1.select("circuitId", "circuitRef","name","location","country","lat","lng","alt")
+#circuits_selected_df = circuits_df1.select("circuitId", "circuitRef","name","location","country","lat","lng","alt")
 
 # COMMAND ----------
 
-circuits_selected_df = circuits_df1.select(circuits_df1.circuitId, circuits_df1.circuitRef,circuits_df1.name,circuits_df1.location,circuits_df1.country,circuits_df1.lat,circuits_df1.lng,circuits_df1.alt)
+#circuits_selected_df = circuits_df1.select(circuits_df1.circuitId, circuits_df1.circuitRef,circuits_df1.name,circuits_df1.location,circuits_df1.country,circuits_df1.lat,circuits_df1.lng,circuits_df1.alt)
 
 # COMMAND ----------
 
-circuits_selected_df = circuits_df1.select(circuits_df1["circuitId"], circuits_df1["circuitRef"],circuits_df1["name"],circuits_df1["location"],circuits_df1["country"],circuits_df1["lat"],circuits_df1["lng"],circuits_df1["alt"])
+#circuits_selected_df = circuits_df1.select(circuits_df1["circuitId"], circuits_df1["circuitRef"],circuits_df1["name"],circuits_df1["location"],circuits_df1["country"],circuits_df1["lat"],circuits_df1["lng"],circuits_df1["alt"])
 
 # COMMAND ----------
 
@@ -76,11 +65,6 @@ from pyspark.sql.functions import col
 
 circuits_selected_df = circuits_df1.select(col("circuitId"), col("circuitRef"),col("name"),col("location").alias("Race Location"),col("country"),col("lat"),col("lng"),col("alt"))
 
-# COMMAND ----------
-
-display(circuits_selected_df)
-
-# COMMAND ----------
 
 # MAGIC %md
 # MAGIC Rename columns
@@ -104,7 +88,7 @@ circuits_renamed_df = circuits_selected_df.withColumnRenamed("circuitId","circui
 from pyspark.sql.functions import lit
 
 # COMMAND ----------
-
+#call function defined in the common_functions notebook
 circuits_final_df = add_ingestion_date(circuits_renamed_df)\
 .withColumn("env",lit("Production"))
 
